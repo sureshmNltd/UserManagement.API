@@ -1,0 +1,22 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.0.x'
+- script: dotnet restore UserManagement.API.csproj
+  displayName: Restore
+- script: dotnet build UserManagement.API.csproj --configuration $(buildConfiguration) --no-restore
+  displayName: Build
+- script: dotnet publish UserManagement.API.csproj --configuration $(buildConfiguration) --no-build --output "$(Build.ArtifactStagingDirectory)/api"
+  displayName: Publish
+- publish: '$(Build.ArtifactStagingDirectory)/api'
+  artifact: api
